@@ -124,6 +124,19 @@ module Mongoid
       # This class handles the behaviour for a document that embeds many other
       # documents within in it as an array.
       class Many < Relations::Many
+        VALID_OPTIONS = [
+          :as,
+          :cascade_callbacks,
+          :cyclic,
+          :order,
+          :store_as,
+          :before_add,
+          :after_add,
+          :before_remove,
+          :after_remove,
+          :versioned
+         ].freeze
+
         class << self
           # Get the valid options allowed with this relation.
           #
