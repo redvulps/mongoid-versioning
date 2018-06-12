@@ -129,10 +129,19 @@ module Mongoid
 
     private
 
+    def mongoid_version
+      @mongoid_version ||=  Mongoid::VERSION.split('.')[0].to_i
+    end
+
     def clone_document
       attrs = as_document.__deep_copy__
       attrs["version"] = 1 if attrs.delete("versions")
-      process_localized_attributes(attrs)
+
+      if mongoid_version > 4
+        process_localized_attributes(self, attrs)
+      else
+        process_localized_attributes(attrs)
+      end
       attrs
     end
 
@@ -146,11 +155,12 @@ module Mongoid
     #
     # @since 2.0.0
     def previous_revision
+      session = mongoid_version > 4 ? self.mongo_client : self.mongo_session
+
       _loading_revision do
-        self.class.unscoped.
-          with(self.mongo_session.options).
-          where(_id: id).
-          any_of({ version: version }, { version: nil }).first
+        self.class.unscoped.with(session.options) do |scoped|
+          scoped.where(_id: id).any_of({ version: version }, { version: nil }).first
+        end
       end
     end
 
