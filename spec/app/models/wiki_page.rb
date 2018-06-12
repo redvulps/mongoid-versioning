@@ -11,5 +11,5 @@ class WikiPage
 
   has_many :comments, dependent: :destroy, validate: false
   has_many :child_pages, class_name: "WikiPage", dependent: :delete, inverse_of: :parent_pages
-  belongs_to :parent_pages, class_name: "WikiPage", inverse_of: :child_pages
+  belongs_to :parent_pages, class_name: "WikiPage", inverse_of: :child_pages, required: false
 end
