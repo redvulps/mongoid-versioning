@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 gem "rake"
-gem "mongoid", github: 'mongoid'
+gem "mongoid", "> 3", "< 7"
 
-gem "rspec", "~> 3.0.0.beta2"
+group :development, :test do
+  gem "rspec", "< 4"
+end
