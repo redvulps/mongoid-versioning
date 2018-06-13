@@ -194,7 +194,9 @@ describe Mongoid::Versioning do
       let(:title) { "my new wiki" }
 
       let!(:page) do
-        WikiPage.with(database: "mongoid_test_alt").create!(description: "1",title: title)
+        WikiPage.with(database: "mongoid_test_alt") do |scope|
+          scope.create!(description: "1", title: title)
+        end
       end
 
       context "when the document is persisted once" do
@@ -210,14 +212,18 @@ describe Mongoid::Versioning do
         end
 
         it "persists to specified database" do
-          expect(WikiPage.with(database: "mongoid_test_alt").find_by(title: title)).to_not be_nil
+          expect(WikiPage.with(database: "mongoid_test_alt") { |scope| scope.find_by(title: title) }).to_not be_nil
         end
       end
 
       context "when the document is persisted more than once" do
 
         before do
-          3.times { |n| page.with(database: "mongoid_test_alt").update_attribute(:description, "#{n}") }
+          3.times do |n|
+            page.with(database: "mongoid_test_alt") do |scope|
+              scope.update_attribute(:description, "#{n}")
+            end
+          end
         end
 
         it "returns the number of versions" do
